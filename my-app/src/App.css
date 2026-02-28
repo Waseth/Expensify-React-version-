@@ -36,8 +36,8 @@
   --shadow:    0 8px 40px rgba(0,0,0,.12);
 }
 
-/* Smooth theme transition on everything except cursor */
-*:not(.xp-cursor-dot):not(.xp-cursor-ring) {
+/* Smooth theme transition */
+* {
   transition:
     background-color .25s ease,
     border-color .25s ease,
@@ -54,86 +54,6 @@ body {
   font-family: var(--font-body);
   min-height: 100vh;
   overflow-x: hidden;
-  cursor: none;
-}
-
-/* Hide default cursor on all interactive elements too */
-a, button, input, select, textarea, label, [role="button"] {
-  cursor: none !important;
-}
-
-/* ── CUSTOM CURSOR ── */
-.xp-cursor {
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%, -50%);
-}
-
-/* Inner dot */
-.xp-cursor-dot {
-  position: fixed;
-  top: 0; left: 0;
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
-  transform: translate(-50%, -50%);
-  transition: transform .08s ease, width .15s ease, height .15s ease;
-}
-
-/* Outer ring */
-.xp-cursor-ring {
-  position: fixed;
-  top: 0; left: 0;
-  width: 36px; height: 36px;
-  border: 1.5px solid var(--accent);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99998;
-  transform: translate(-50%, -50%);
-  transition: width .2s ease, height .2s ease, border-color .2s ease, opacity .2s ease;
-  opacity: .5;
-}
-
-/* Hover state — ring expands, dot shrinks */
-body.cursor-hover .xp-cursor-dot {
-  width: 6px; height: 6px;
-  background: #000;
-}
-body.cursor-hover .xp-cursor-ring {
-  width: 52px; height: 52px;
-  border-color: var(--accent);
-  opacity: .9;
-}
-
-/* Click state — both compress */
-body.cursor-click .xp-cursor-dot {
-  width: 12px; height: 12px;
-  background: var(--accent);
-}
-body.cursor-click .xp-cursor-ring {
-  width: 24px; height: 24px;
-  opacity: 1;
-}
-
-/* Text input state — becomes a thin vertical line */
-body.cursor-text .xp-cursor-dot {
-  width: 2px; height: 18px;
-  border-radius: 1px;
-  background: var(--accent);
-}
-body.cursor-text .xp-cursor-ring {
-  opacity: 0;
-}
-
-/* Hide on mobile (touch devices don't need it) */
-@media (hover: none) and (pointer: coarse) {
-  .xp-cursor-dot, .xp-cursor-ring { display: none; }
-  body { cursor: auto; }
-  a, button, input, select, textarea, label, [role="button"] { cursor: auto !important; }
 }
 
 a { text-decoration: none; color: inherit; }

@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
 import AppDashboard from './pages/AppDashboard';
-import CustomCursor from './components/CustomCursor';
 import './App.css';
 
 // Apply saved theme immediately so there's no flash on load
@@ -39,7 +38,6 @@ function PublicRoute({ children }) {
 export default function App() {
   return (
     <AuthProvider>
-      <CustomCursor />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/app" replace />} />
