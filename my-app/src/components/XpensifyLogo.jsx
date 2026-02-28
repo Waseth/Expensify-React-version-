@@ -31,11 +31,13 @@ export default function XpensifyLogo({ size = 32, showWordmark = true }) {
           className="xp-logo-wordmark"
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize:   `${size * 0.72}px`,
-            letterSpacing: '3px',
+            fontSize:   `${size * 0.8}px`,
+            letterSpacing: '1px',
             color: text,
             lineHeight: 1,
             userSelect: 'none',
+            marginLeft: '-6px',
+            marginTop: '2px',
           }}
         >
           XPENSIFY
