@@ -8,7 +8,7 @@ import {
 import {
   LayoutDashboard, ListChecks, TrendingUp,
   Sun, Moon, Menu, X, LogOut,
-  PlusCircle, RefreshCw, Trash2, Lock, Unlock,
+  PlusCircle, RefreshCw, Trash2, Lock,
   CheckCircle2, AlertTriangle, Info, XCircle,
   ChevronRight, Wallet, PiggyBank, Gamepad2,
   Calendar, ArrowRightLeft, Banknote, CreditCard,
@@ -723,7 +723,7 @@ export default function AppDashboard() {
         {activeTab === 'input' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><LayoutDashboard size={12} style={{marginRight:'.4rem'}}/>// BUDGET CONTROL</div>
+              <div className="xp-section-label"><LayoutDashboard size={12} style={{marginRight:'.4rem'}}/>BUDGET CONTROL</div>
               <h1 className="xp-section-title">INPUT <span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Set your monthly budget and track expenses</p>
             </div>
@@ -959,7 +959,7 @@ export default function AppDashboard() {
         {activeTab === 'needs' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><ListChecks size={12} style={{marginRight:'.4rem'}}/>// WEEKLY TRACKING</div>
+              <div className="xp-section-label"><ListChecks size={12} style={{marginRight:'.4rem'}}/>WEEKLY TRACKING</div>
               <h1 className="xp-section-title">NEEDS <span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Monitor weekly spending and close weeks</p>
             </div>
@@ -994,7 +994,7 @@ export default function AppDashboard() {
         {activeTab === 'income' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><TrendingUp size={12} style={{marginRight:'.4rem'}}/>// MONEY FLOW</div>
+              <div className="xp-section-label"><TrendingUp size={12} style={{marginRight:'.4rem'}}/>MONEY FLOW</div>
               <h1 className="xp-section-title">INCOME <span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Savings, personal spending, and money flow</p>
             </div>
