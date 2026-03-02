@@ -1,17 +1,9 @@
-// import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
 import AppDashboard from './pages/AppDashboard';
 import './App.css';
-
-// Apply saved theme immediately so there's no flash on load
-const savedTheme = localStorage.getItem('xp_theme');
-if (savedTheme === 'light') {
-  document.documentElement.setAttribute('data-theme', 'light');
-} else {
-  document.documentElement.removeAttribute('data-theme');
-}
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
