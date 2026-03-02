@@ -6,18 +6,18 @@ import XpensifyLogo from '../components/XpensifyLogo';
 import './AuthPage.css';
 
 export default function AuthPage() {
-  const [mode, setMode] = useState('login'); // 'login' | 'signup'
+  const [mode, setMode] = useState('login'); 
   const [sliding, setSliding] = useState(false);
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
-  // Login form state
+
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Signup form state
+
   const [regUsername, setRegUsername] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
@@ -78,14 +78,14 @@ export default function AuthPage() {
       <div className="auth-noise" />
 
       <div className="auth-container">
-        {/* ── BRAND ── */}
+
         <div className="auth-brand">
           <XpensifyLogo size={32} showWordmark={true} />
         </div>
 
-        {/* ── PANEL ── */}
+
         <div className={`auth-panel ${sliding ? 'sliding' : ''}`}>
-          {/* ── TABS ── */}
+
           <div className="auth-tabs">
             <button
               className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
@@ -98,9 +98,9 @@ export default function AuthPage() {
             <div className={`auth-tab-indicator ${mode === 'signup' ? 'right' : 'left'}`} />
           </div>
 
-          {/* ── FORMS WRAPPER ── */}
+
           <div className={`auth-forms-track ${mode === 'signup' ? 'show-signup' : 'show-login'}`}>
-            {/* LOGIN */}
+
             <form className="auth-form" onSubmit={handleLogin} autoComplete="off">
               <div className="auth-form-header">
                 <h2 className="auth-form-title">WELCOME BACK</h2>
