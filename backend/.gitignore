@@ -1,10 +1,9 @@
-# Environment
 .env
 .env.local
 .env.development
 .env.production
+railway.json
 
-# Python
 venv/
 __pycache__/
 *.pyc
@@ -15,7 +14,6 @@ __pycache__/
 instance/
 *.db
 
-# IDE
 .vscode/
 .idea/
 venv/
