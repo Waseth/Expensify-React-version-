@@ -138,7 +138,7 @@
   font-family: var(--font-mono);
   font-size: .7rem;
   letter-spacing: 3px;
-  cursor: none;
+  cursor: pointer;
   transition: color .2s;
   position: relative;
   z-index: 1;
