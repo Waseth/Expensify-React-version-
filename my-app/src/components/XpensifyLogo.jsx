@@ -20,7 +20,7 @@ export default function XpensifyLogo({ size = 32, showWordmark = true }) {
           fontSize: `${bigH}px`,
           fontWeight: 800,
           color: 'var(--accent)',
-          lineHeight: 1,
+          lineHeight: 0.9,
           display: 'block',
         }}
       >

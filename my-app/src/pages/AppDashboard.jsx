@@ -261,7 +261,7 @@ function WeekCard({ weekKey, weekId, title, data, splitPct, onEndWeek, onEditBud
 export default function AppDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('input');
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  // const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
 
   const [settings, setSettings] = useState({ monthly_allowance: 0, budget_locked: false, split_percentage: 50 });
