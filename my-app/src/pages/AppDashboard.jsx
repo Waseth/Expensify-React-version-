@@ -705,7 +705,7 @@ export default function AppDashboard() {
             </div>
 
             <div className="xp-grid-2" style={{ marginBottom: '1.5rem' }}>
-              {/* MONTHLY SETUP */}
+             
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><Wallet size={14} style={{marginRight:'.5rem'}}/>MONTHLY SETUP</span>
