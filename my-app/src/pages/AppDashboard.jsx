@@ -6,7 +6,8 @@ import {
   ArcElement, Title, Tooltip, Legend
 } from 'chart.js';
 import {
-  LayoutDashboard, ListChecks, TrendingUp, X, LogOut,
+  LayoutDashboard, ListChecks, TrendingUp,
+  Menu, X, LogOut,
   PlusCircle, RefreshCw, Trash2, Lock,
   CheckCircle2, AlertTriangle, Info, XCircle,
   ChevronRight, Wallet, PiggyBank, Gamepad2,
@@ -19,7 +20,7 @@ import XpensifyLogo from '../components/XpensifyLogo';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
-
+// ── HELPERS ──────────────────────────────────────────────────────────────────
 
 function fmt(n) {
   const v = parseFloat(n || 0);
@@ -59,7 +60,7 @@ const CAT_NAMES = {
   savings: 'Savings', personal: 'Personal'
 };
 
-
+// ── NOTIFICATION COMPONENT ────────────────────────────────────────────────────
 
 function Notifications({ notifs }) {
   const Icon = ({ type }) => {
@@ -80,7 +81,7 @@ function Notifications({ notifs }) {
   );
 }
 
-
+// ── MODAL ─────────────────────────────────────────────────────────────────────
 
 function Modal({ open, onClose, title, sub, children, actions }) {
   return (
@@ -96,6 +97,8 @@ function Modal({ open, onClose, title, sub, children, actions }) {
   );
 }
 
+// ── SPLIT SLIDER COMPONENT ───────────────────────────────────────────────────
+// Reusable slider used inside modals — shows live Ksh amounts per side
 
 function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
   const savingsAmt = parseFloat(((amount || 0) * pct / 100).toFixed(2));
@@ -109,13 +112,13 @@ function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
         <span className="xp-modal-split-ratio">{pct}<span style={{ color: 'var(--text-dim)' }}>/{100 - pct}</span></span>
       </div>
 
-
+      {/* Visual bar */}
       <div className="xp-modal-split-bar">
         <div className="xp-modal-split-bar-savings" style={{ width: `${pct}%` }} />
         <div className="xp-modal-split-bar-personal" />
       </div>
 
-
+      {/* Slider */}
       <input
         type="range"
         className="xp-slider"
@@ -124,7 +127,7 @@ function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
         onChange={e => onChange(Number(e.target.value))}
       />
 
-
+      {/* Live amount breakdown */}
       <div className="xp-modal-split-preview">
         <div className="xp-modal-split-side savings">
           <div className="xp-modal-split-side-icon"><PiggyBank size={16} /></div>
@@ -152,7 +155,7 @@ function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
   );
 }
 
-
+// ── WEEK CARD ─────────────────────────────────────────────────────────────────
 
 function WeekCard({ weekKey, weekId, title, data, splitPct, onEndWeek, onEditBudget, expenses }) {
   const pct = data.allocated > 0 ? Math.min(100, (data.spent / data.allocated) * 100) : 0;
@@ -185,11 +188,15 @@ function WeekCard({ weekKey, weekId, title, data, splitPct, onEndWeek, onEditBud
   return (
     <div className={`xp-week-card ${data.ended ? 'ended' : ''}`}>
       <div className="xp-week-card-header">
-        <span className="xp-week-card-title">{title}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '.6rem' }}>
+        {/* Title row — centered on mobile */}
+        <div className="xp-week-card-title-row">
+          <span className="xp-week-card-title">{title}</span>
           <span className={`xp-badge ${data.ended ? 'xp-badge-gray' : remaining < 0 ? 'xp-badge-red' : pct < 50 ? 'xp-badge-green' : pct >= 90 ? 'xp-badge-yellow' : 'xp-badge-accent'}`}>
             {data.ended ? 'ENDED' : remaining < 0 ? 'OVERSPENT' : pct >= 90 ? 'NEAR LIMIT' : pct < 50 ? 'UNDER' : 'ON TRACK'}
           </span>
+        </div>
+        {/* Buttons row — centered on mobile */}
+        <div className="xp-week-card-actions">
           {!data.ended && (
             <button
               className="btn btn-ghost"
@@ -256,14 +263,14 @@ function WeekCard({ weekKey, weekId, title, data, splitPct, onEndWeek, onEditBud
   );
 }
 
-
+// ── MAIN DASHBOARD ────────────────────────────────────────────────────────────
 
 export default function AppDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('input');
-  // const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-
+  // Data state
   const [settings, setSettings] = useState({ monthly_allowance: 0, budget_locked: false, split_percentage: 50 });
   const [weeks, setWeeks] = useState({
     fixed_week1: { allocated: 0, spent: 0, ended: false },
@@ -275,7 +282,7 @@ export default function AppDashboard() {
   const [accounts, setAccounts] = useState({ savings: { balance: 0, total_spent: 0 }, personal: { balance: 0, total_spent: 0 } });
   const [externalHistory, setExternalHistory] = useState([]);
 
-
+  // Form state - Input Dashboard
   const [monthlyAllowance, setMonthlyAllowance] = useState('');
   const [splitPct, setSplitPct] = useState(50);
   const [weekAllocations, setWeekAllocations] = useState({ fixed_week1: '', week2: '', week3: '', week4: '' });
@@ -285,7 +292,7 @@ export default function AppDashboard() {
   const [expAmt, setExpAmt] = useState('');
   const [expDate, setExpDate] = useState(new Date().toISOString().split('T')[0]);
 
-
+  // Modals
   const [extIncomeOpen, setExtIncomeOpen] = useState(false);
   const [extAmt, setExtAmt] = useState('');
   const [extDesc, setExtDesc] = useState('');
@@ -294,7 +301,7 @@ export default function AppDashboard() {
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [confirmResetOpen, setConfirmResetOpen] = useState(false);
 
-
+  // Per-modal split percentages — remember last used value via localStorage
   const [extSplitPct, setExtSplitPct] = useState(() =>
     parseInt(localStorage.getItem('xp_ext_split') || '50', 10)
   );
@@ -310,11 +317,11 @@ export default function AppDashboard() {
     localStorage.setItem('xp_week_split', String(endWeekSplitPct));
   }, [endWeekSplitPct]);
 
-
-  const [weekAllocModal, setWeekAllocModal] = useState(null);
+  // Week allocation modal — shown when a new week starts with no budget set
+  const [weekAllocModal, setWeekAllocModal] = useState(null); // { weekKey, label, isPrompt }
   const [weekAllocInput, setWeekAllocInput] = useState('');
 
-
+  // Notifications
   const [notifs, setNotifs] = useState([]);
   const notifIdRef = useRef(0);
 
@@ -329,7 +336,7 @@ export default function AppDashboard() {
     }, 4500);
   }, []);
 
-
+  // ── LOAD DATA ──────────────────────────────────────────────────────────────
 
   const loadData = useCallback(async () => {
     try {
@@ -362,18 +369,20 @@ export default function AppDashboard() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-
+  // ── WEEK START DETECTION ───────────────────────────────────────────────────
+  // Runs after data loads — checks if current week has no allocation yet
+  // and whether the next week is starting soon (within 1 day)
 
   useEffect(() => {
-    if (!settings.budget_locked) return;
+    if (!settings.budget_locked) return; // only relevant once budget is locked
 
     const { key, label, num } = getCurrentWeekInfo();
     const currentWeekData = weeks[key];
     const day = new Date().getDate();
 
-
+    // Current week has started but has no allocation — prompt user
     if (currentWeekData && currentWeekData.allocated === 0 && !currentWeekData.ended) {
-
+      // Only prompt once per session using sessionStorage
       const promptKey = `xp_prompted_${month}_${key}`;
       if (!sessionStorage.getItem(promptKey)) {
         sessionStorage.setItem(promptKey, '1');
@@ -381,7 +390,8 @@ export default function AppDashboard() {
       }
     }
 
-
+    // Upcoming week warning — notify if we're in the last day of current week
+    // (day 7, 14, 21 = last day of each period)
     const weekEnds = [7, 14, 21, 31];
     const currentEnd = weekEnds[num - 1];
     if (day === currentEnd) {
@@ -401,10 +411,10 @@ export default function AppDashboard() {
         }
       }
     }
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.budget_locked, weeks, month]);
 
-
+  // ── CALCULATE REMAINING ────────────────────────────────────────────────────
 
   useEffect(() => {
     const total = parseFloat(monthlyAllowance) || 0;
@@ -412,7 +422,7 @@ export default function AppDashboard() {
     setRemainingToAllocate(Math.max(0, total - allocated));
   }, [monthlyAllowance, weekAllocations]);
 
-
+  // ── UPDATE BUDGET ──────────────────────────────────────────────────────────
 
   const handleUpdateBudget = async () => {
     const allowance = parseFloat(monthlyAllowance);
@@ -445,7 +455,7 @@ export default function AppDashboard() {
     }
   };
 
-
+  // ── UPDATE WEEK ALLOCATION ─────────────────────────────────────────────────
 
   const handleSaveWeekAllocation = async () => {
     const amount = parseFloat(weekAllocInput);
@@ -467,7 +477,7 @@ export default function AppDashboard() {
     }
   };
 
-
+  // ── ADD EXPENSE ────────────────────────────────────────────────────────────
 
   const handleAddExpense = async (e) => {
     e.preventDefault();
@@ -486,7 +496,7 @@ export default function AppDashboard() {
     }
   };
 
-
+  // ── DELETE EXPENSE ─────────────────────────────────────────────────────────
 
   const handleDeleteExpense = async () => {
     if (!deleteModal) return;
@@ -506,7 +516,7 @@ export default function AppDashboard() {
     setWeekAllocModal({ weekKey, label, isPrompt: false });
   };
 
-
+  // ── END WEEK ───────────────────────────────────────────────────────────────
 
   const handleEndWeek = (weekKey) => {
     if (weeks[weekKey]?.ended) return notify('Week already ended', 'warning');
@@ -530,6 +540,7 @@ export default function AppDashboard() {
     }
   };
 
+  // ── EXTERNAL INCOME ────────────────────────────────────────────────────────
 
   const handleAddExtIncome = async () => {
     const amount = parseFloat(extAmt);
@@ -546,7 +557,7 @@ export default function AppDashboard() {
     }
   };
 
-
+  // ── RESET / CLEAR ──────────────────────────────────────────────────────────
 
   const handleResetMonth = async () => {
     try {
@@ -574,13 +585,13 @@ export default function AppDashboard() {
     }
   };
 
-
+  // ── COMPUTED VALUES ────────────────────────────────────────────────────────
 
   const totalNeedsAllocated = Object.values(weeks).reduce((s, w) => s + w.allocated, 0);
   const totalNeedsSpent = Object.values(weeks).reduce((s, w) => s + w.spent, 0);
   const totalExternal = externalHistory.reduce((s, e) => s + e.amount, 0);
 
-
+  // ── CHART DATA ─────────────────────────────────────────────────────────────
 
   const barData = {
     labels: ['Fixed + Wk1', 'Week 2', 'Week 3', 'Week 4'],
@@ -620,7 +631,7 @@ export default function AppDashboard() {
     plugins: { legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Space Mono', size: 11 }, padding: 16 } } }
   };
 
-
+  // ── RENDER ─────────────────────────────────────────────────────────────────
 
   const navTabs = [
     { key: 'input',  label: 'INPUT',  icon: <LayoutDashboard size={20} /> },
@@ -632,13 +643,13 @@ export default function AppDashboard() {
     <>
       <Notifications notifs={notifs} />
 
-
+      {/* ── NAVBAR ── */}
       <nav className="xp-nav">
         <div className="xp-nav-brand">
           <XpensifyLogo size={24} showWordmark={true} />
         </div>
 
-
+        {/* Desktop tabs */}
         <div className="xp-nav-tabs">
           {navTabs.map(t => (
             <button key={t.key} className={`xp-nav-tab ${activeTab === t.key ? 'active' : ''}`}
@@ -657,7 +668,7 @@ export default function AppDashboard() {
         </div>
       </nav>
 
-
+      {/* ── MOBILE BOTTOM NAV ── */}
       <div className="xp-mobile-bottom-nav">
         {navTabs.map(t => (
           <button
@@ -669,43 +680,44 @@ export default function AppDashboard() {
             <span>{t.label}</span>
           </button>
         ))}
-
+        {/* Logout as last tab on mobile */}
         <button className="xp-mobile-tab logout-tab" onClick={logout}>
           <LogOut size={20} />
           <span>LOGOUT</span>
         </button>
       </div>
 
-
+      {/* ── ACTION BAR ── */}
       <div className="xp-action-bar">
         <span className="xp-week-badge">
           <Calendar size={13} style={{marginRight:'.4rem'}} />
           {getCurrentWeek().toUpperCase()} — {getMonthLabel()}
         </span>
-
+        {/* Row: External Income + Reset Month side by side */}
         <div className="xp-action-bar-row">
           <button className="btn btn-ghost" onClick={() => setExtIncomeOpen(true)}><PlusCircle size={14} /> EXTERNAL INCOME</button>
           <button className="btn btn-warn"  onClick={() => setConfirmResetOpen(true)}><RefreshCw size={14} /> RESET MONTH</button>
         </div>
-
+        {/* Clear All centered below */}
         <div className="xp-action-bar-clear">
           <button className="btn btn-danger" onClick={() => setConfirmClearOpen(true)}><Trash2 size={14} /> CLEAR ALL</button>
         </div>
       </div>
 
-
+      {/* ── DASHBOARDS ── */}
       <main className="xp-main">
 
+        {/* ══ INPUT DASHBOARD ══════════════════════════════════════════════════ */}
         {activeTab === 'input' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><LayoutDashboard size={12} style={{marginRight:'.4rem'}}/>BUDGET CONTROL</div>
-              <h1 className="xp-section-title">INPUT <span className="accent">DASHBOARD</span></h1>
+              <div className="xp-section-label"><LayoutDashboard size={12} style={{marginRight:'.4rem'}}/>// BUDGET CONTROL</div>
+              <h1 className="xp-section-title">INPUT<br /><span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Set your monthly budget and track expenses</p>
             </div>
 
             <div className="xp-grid-2" style={{ marginBottom: '1.5rem' }}>
-             
+              {/* MONTHLY SETUP */}
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><Wallet size={14} style={{marginRight:'.5rem'}}/>MONTHLY SETUP</span>
@@ -722,6 +734,7 @@ export default function AppDashboard() {
                     </div>
                   </div>
 
+                  {/* SPLIT PERCENTAGE CONTROL */}
                   <div className="xp-split-control">
                     <div className="xp-split-title">SURPLUS / DEFICIT SPLIT</div>
                     <div className="xp-split-display">
@@ -746,6 +759,7 @@ export default function AppDashboard() {
                     </p>
                   </div>
 
+                  {/* WEEK ALLOCATIONS */}
                   <div style={{ marginBottom: '.5rem' }}>
                     <span className="xp-label" style={{ display: 'block', marginBottom: '.8rem' }}>WEEKLY BUDGET ALLOCATIONS</span>
                     {Object.entries(weekAllocations).map(([key, val]) => (
@@ -776,6 +790,7 @@ export default function AppDashboard() {
                 </div>
               </div>
 
+              {/* ADD EXPENSE */}
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><CreditCard size={14} style={{marginRight:'.5rem'}}/>ADD EXPENSE</span>
@@ -824,6 +839,7 @@ export default function AppDashboard() {
               </div>
             </div>
 
+            {/* BUDGET SUMMARY */}
             <div className="xp-card xp-col-span-2" style={{ marginBottom: '1.5rem' }}>
               <div className="xp-card-header"><span className="xp-card-title"><BarChart2 size={14} style={{marginRight:'.5rem'}}/>BUDGET SUMMARY</span></div>
               <div className="xp-card-body">
@@ -840,6 +856,12 @@ export default function AppDashboard() {
                     <div className="xp-summary-row">
                       <span className="xp-summary-key">Total Needs Spent</span>
                       <span className="xp-summary-val text-red">Ksh {fmt(totalNeedsSpent)}</span>
+                    </div>
+                    <div className="xp-summary-row">
+                      <span className="xp-summary-key" style={{ fontWeight: 600 }}>Remaining amount</span>
+                      <span className={`xp-summary-val ${totalNeedsAllocated - totalNeedsSpent < 0 ? 'text-red' : 'text-green'}`}>
+                        Ksh {fmt(totalNeedsAllocated - totalNeedsSpent)}
+                      </span>
                     </div>
                     <div className="xp-summary-row">
                       <span className="xp-summary-key">Split Ratio</span>
@@ -862,6 +884,7 @@ export default function AppDashboard() {
                   </div>
                 </div>
 
+                {/* Unallocated weeks notice */}
                 {settings.budget_locked && (() => {
                   const weekDefs = [
                     { key: 'fixed_week1', label: 'Fixed + Week 1' },
@@ -890,6 +913,7 @@ export default function AppDashboard() {
               </div>
             </div>
 
+            {/* RECENT EXPENSES TABLE */}
             <div className="xp-card">
               <div className="xp-card-header"><span className="xp-card-title"><Clock size={14} style={{marginRight:'.5rem'}}/>RECENT EXPENSES</span></div>
               <div className="xp-card-body">
@@ -925,10 +949,11 @@ export default function AppDashboard() {
           </div>
         )}
 
+        {/* ══ NEEDS DASHBOARD ══════════════════════════════════════════════════ */}
         {activeTab === 'needs' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><ListChecks size={12} style={{marginRight:'.4rem'}}/>WEEKLY TRACKING</div>
+              <div className="xp-section-label"><ListChecks size={12} style={{marginRight:'.4rem'}}/>// WEEKLY TRACKING</div>
               <h1 className="xp-section-title">NEEDS <span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Monitor weekly spending and close weeks</p>
             </div>
@@ -959,17 +984,17 @@ export default function AppDashboard() {
           </div>
         )}
 
-
+        {/* ══ INCOME DASHBOARD ═════════════════════════════════════════════════ */}
         {activeTab === 'income' && (
           <div>
             <div className="xp-section-header">
-              <div className="xp-section-label"><TrendingUp size={12} style={{marginRight:'.4rem'}}/>MONEY FLOW</div>
+              <div className="xp-section-label"><TrendingUp size={12} style={{marginRight:'.4rem'}}/>// MONEY FLOW</div>
               <h1 className="xp-section-title">INCOME <span className="accent">DASHBOARD</span></h1>
               <p className="xp-section-sub">Savings, personal spending, and money flow</p>
             </div>
 
             <div className="xp-grid-2" style={{ marginBottom: '1.5rem' }}>
-
+              {/* PIE CHART */}
               <div className="xp-card">
                 <div className="xp-card-header"><span className="xp-card-title"><PieChart size={14} style={{marginRight:'.5rem'}}/>MONEY DISTRIBUTION</span></div>
                 <div className="xp-card-body">
@@ -979,7 +1004,7 @@ export default function AppDashboard() {
                 </div>
               </div>
 
-
+              {/* INCOME FLOW DIAGRAM */}
               <div className="xp-card">
                 <div className="xp-card-header"><span className="xp-card-title"><ArrowRightLeft size={14} style={{marginRight:'.5rem'}}/>INCOME SUMMARY</span></div>
                 <div className="xp-card-body">
@@ -1030,7 +1055,7 @@ export default function AppDashboard() {
             </div>
 
             <div className="xp-grid-2" style={{ marginBottom: '1.5rem' }}>
-
+              {/* SAVINGS */}
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><PiggyBank size={14} style={{marginRight:'.5rem'}}/>SAVINGS</span>
@@ -1054,7 +1079,7 @@ export default function AppDashboard() {
                 </div>
               </div>
 
-
+              {/* PERSONAL */}
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><Gamepad2 size={14} style={{marginRight:'.5rem'}}/>PERSONAL</span>
@@ -1083,7 +1108,7 @@ export default function AppDashboard() {
               </div>
             </div>
 
-
+            {/* TRANSACTIONS TABLE */}
             <div className="xp-card">
               <div className="xp-card-header"><span className="xp-card-title"><ArrowRightLeft size={14} style={{marginRight:'.5rem'}}/>ALL TRANSACTIONS</span></div>
               <div className="xp-card-body">
@@ -1101,7 +1126,7 @@ export default function AppDashboard() {
                           <td className="text-red mono">−Ksh {fmt(e.amount)}</td>
                         </tr>
                       ))}
-
+                      {/* external income */}
                       {externalHistory.map(e => (
                         <tr key={`ext-${e.id}`}>
                           <td>{fmtDate(e.income_date)}</td>
@@ -1124,7 +1149,7 @@ export default function AppDashboard() {
 
       </main>
 
-
+      {/* ── FOOTER ── */}
       <footer className="xp-footer">
         <p className="xp-footer-text">Developed by <strong style={{ color: 'var(--accent)' }}>Emmanuel Waseth</strong></p>
         <div className="xp-footer-links">
@@ -1134,7 +1159,9 @@ export default function AppDashboard() {
         </div>
       </footer>
 
+      {/* ── MODALS ── */}
 
+      {/* External Income */}
       <Modal open={extIncomeOpen} onClose={() => setExtIncomeOpen(false)}
         title="EXTERNAL INCOME" sub="Add income from outside your monthly allowance"
         actions={<>
@@ -1165,7 +1192,7 @@ export default function AppDashboard() {
         />
       </Modal>
 
-
+      {/* End Week */}
       {endWeekModal && (() => {
         const d = endWeekModal.data;
         const surplus = parseFloat((d.allocated - d.spent).toFixed(2));
@@ -1183,7 +1210,7 @@ export default function AppDashboard() {
               <button className="btn btn-accent" onClick={confirmEndWeek}><CheckCircle2 size={13} style={{marginRight:'.3rem'}}/>CONFIRM & CLOSE WEEK</button>
             </>}>
 
-
+            {/* Week summary numbers */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem', marginBottom: '1rem' }}>
               <div className="xp-summary-row">
                 <span className="xp-summary-key">Allocated</span>
@@ -1203,7 +1230,7 @@ export default function AppDashboard() {
               </div>
             </div>
 
-
+            {/* Only show split slider if there's actually something to split */}
             {surplus !== 0 && (
               <SplitSlider
                 pct={endWeekSplitPct}
@@ -1213,7 +1240,7 @@ export default function AppDashboard() {
               />
             )}
 
-
+            {/* Outcome description */}
             {isSurplus && (
               <div className="xp-info-box" style={{ marginTop: '1rem' }}>
                 ✓ Savings will receive <strong style={{ color: 'var(--accent3)' }}>+Ksh {fmt(savingsChange)}</strong> and Personal will receive <strong style={{ color: 'var(--gold)' }}>+Ksh {fmt(personalChange)}</strong>
@@ -1236,7 +1263,6 @@ export default function AppDashboard() {
           </Modal>
         );
       })()}
-
 
       <Modal open={!!deleteModal} onClose={() => setDeleteModal(null)}
         title="DELETE EXPENSE" sub="This cannot be undone."
@@ -1261,7 +1287,6 @@ export default function AppDashboard() {
           </div>
         )}
       </Modal>
-
 
       <Modal open={confirmClearOpen} onClose={() => setConfirmClearOpen(false)}
         title="CLEAR ALL DATA" sub="This will permanently delete all expenses, budgets, and balances for this month."
