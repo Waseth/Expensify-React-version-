@@ -208,7 +208,7 @@
   padding: .85rem 1rem;
   color: var(--text);
   font-family: var(--font-mono);
-  font-size: .85rem;
+  font-size: 16px;
   outline: none;
   transition: border-color .2s, box-shadow .2s;
   width: 100%;
