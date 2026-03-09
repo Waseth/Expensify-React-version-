@@ -129,8 +129,6 @@ def init_db():
 def get_current_month():
     return datetime.now().strftime('%Y-%m')
 
-# ── AUTH ROUTES ──────────────────────────────────────────────────────────────
-
 @app.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -206,7 +204,6 @@ def me():
         user['created_at'] = user['created_at'].isoformat()
     return jsonify(user)
 
-# ── BUDGET SETTINGS ───────────────────────────────────────────────────────────
 
 @app.route('/api/budget/settings', methods=['GET'])
 @jwt_required()
@@ -287,7 +284,6 @@ def update_budget_settings():
     conn.close()
     return jsonify({'success': True})
 
-# ── EXPENSES ──────────────────────────────────────────────────────────────────
 
 @app.route('/api/expenses', methods=['GET'])
 @jwt_required()
@@ -409,7 +405,6 @@ def delete_expense(expense_id):
     conn.close()
     return jsonify({'success': True})
 
-# ── END WEEK ──────────────────────────────────────────────────────────────────
 
 @app.route('/api/budget/week-allocation', methods=['POST'])
 @jwt_required()
@@ -429,7 +424,6 @@ def update_week_allocation():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    # Block update if week is already ended
     cursor.execute(
         "SELECT ended, spent FROM week_budgets WHERE user_id = %s AND month_year = %s AND week_key = %s",
         (user_id, month_year, week_key)
@@ -440,7 +434,6 @@ def update_week_allocation():
         conn.close()
         return jsonify({'error': 'Cannot update an ended week'}), 400
 
-    # Upsert the allocation
     cursor.execute("""
         INSERT INTO week_budgets (user_id, month_year, week_key, allocated, spent, ended)
         VALUES (%s, %s, %s, %s, 0, FALSE)
@@ -519,7 +512,6 @@ def end_week():
     conn.close()
     return jsonify({'success': True, 'diff': diff})
 
-# ── EXTERNAL INCOME ───────────────────────────────────────────────────────────
 
 @app.route('/api/income/external', methods=['POST'])
 @jwt_required()
@@ -607,7 +599,6 @@ def get_income_accounts():
     conn.close()
     return jsonify(accounts)
 
-# ── RESET ─────────────────────────────────────────────────────────────────────
 
 @app.route('/api/budget/reset-month', methods=['POST'])
 @jwt_required()
@@ -620,12 +611,10 @@ def reset_month():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    # Get balances to carry over
     cursor.execute("SELECT account_type, balance FROM income_accounts WHERE user_id = %s AND month_year = %s",
                    (user_id, month_year))
     old_accounts = {a['account_type']: float(a['balance']) for a in cursor.fetchall()}
 
-    # Clear old month data
     cursor.execute("DELETE FROM expenses WHERE user_id = %s AND month_year = %s", (user_id, month_year))
     cursor.execute("DELETE FROM week_budgets WHERE user_id = %s AND month_year = %s", (user_id, month_year))
     cursor.execute("DELETE FROM income_accounts WHERE user_id = %s AND month_year = %s", (user_id, month_year))
@@ -633,7 +622,6 @@ def reset_month():
     cursor.execute("UPDATE budget_settings SET budget_locked = FALSE WHERE user_id = %s AND month_year = %s",
                    (user_id, month_year))
 
-    # Carry over balances
     for acct_type, balance in old_accounts.items():
         if balance > 0:
             cursor.execute("""
