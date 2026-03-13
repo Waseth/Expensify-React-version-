@@ -19,6 +19,8 @@ import {
 import XpensifyLogo from '../components/XpensifyLogo';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
+
+
 function fmt(n) {
   const v = parseFloat(n || 0);
   return v.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -57,6 +59,7 @@ const CAT_NAMES = {
   savings: 'Savings', personal: 'Personal'
 };
 
+
 function Notifications({ notifs }) {
   const Icon = ({ type }) => {
     if (type === 'success') return <CheckCircle2 size={14} />;
@@ -76,6 +79,7 @@ function Notifications({ notifs }) {
   );
 }
 
+
 function Modal({ open, onClose, title, sub, children, actions }) {
   return (
     <div className={`xp-modal-overlay ${open ? 'open' : ''}`} onClick={e => e.target === e.currentTarget && onClose()}>
@@ -90,6 +94,8 @@ function Modal({ open, onClose, title, sub, children, actions }) {
   );
 }
 
+
+
 function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
   const savingsAmt = parseFloat(((amount || 0) * pct / 100).toFixed(2));
   const personalAmt = parseFloat(((amount || 0) * (100 - pct) / 100).toFixed(2));
@@ -102,13 +108,11 @@ function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
         <span className="xp-modal-split-ratio">{pct}<span style={{ color: 'var(--text-dim)' }}>/{100 - pct}</span></span>
       </div>
 
-      {/* Visual bar */}
       <div className="xp-modal-split-bar">
         <div className="xp-modal-split-bar-savings" style={{ width: `${pct}%` }} />
         <div className="xp-modal-split-bar-personal" />
       </div>
 
-      {/* Slider */}
       <input
         type="range"
         className="xp-slider"
@@ -117,7 +121,6 @@ function SplitSlider({ pct, onChange, amount, label = 'SPLIT' }) {
         onChange={e => onChange(Number(e.target.value))}
       />
 
-      {/* Live amount breakdown */}
       <div className="xp-modal-split-preview">
         <div className="xp-modal-split-side savings">
           <div className="xp-modal-split-side-icon"><PiggyBank size={16} /></div>
@@ -250,10 +253,12 @@ function WeekCard({ weekKey, weekId, title, data, splitPct, onEndWeek, onEditBud
   );
 }
 
+
 export default function AppDashboard() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('input');
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   const [settings, setSettings] = useState({ monthly_allowance: 0, budget_locked: false, split_percentage: 50 });
   const [weeks, setWeeks] = useState({
     fixed_week1: { allocated: 0, spent: 0, ended: false },
@@ -264,6 +269,7 @@ export default function AppDashboard() {
   const [expenses, setExpenses] = useState([]);
   const [accounts, setAccounts] = useState({ savings: { balance: 0, total_spent: 0 }, personal: { balance: 0, total_spent: 0 } });
   const [externalHistory, setExternalHistory] = useState([]);
+
   const [monthlyAllowance, setMonthlyAllowance] = useState('');
   const [splitPct, setSplitPct] = useState(50);
   const [weekAllocations, setWeekAllocations] = useState({ fixed_week1: '', week2: '', week3: '', week4: '' });
@@ -272,6 +278,7 @@ export default function AppDashboard() {
   const [expDesc, setExpDesc] = useState('');
   const [expAmt, setExpAmt] = useState('');
   const [expDate, setExpDate] = useState(new Date().toISOString().split('T')[0]);
+
   const [extIncomeOpen, setExtIncomeOpen] = useState(false);
   const [extAmt, setExtAmt] = useState('');
   const [extDesc, setExtDesc] = useState('');
@@ -279,6 +286,7 @@ export default function AppDashboard() {
   const [deleteModal, setDeleteModal] = useState(null);
   const [confirmClearOpen, setConfirmClearOpen] = useState(false);
   const [confirmResetOpen, setConfirmResetOpen] = useState(false);
+
   const [extSplitPct, setExtSplitPct] = useState(() =>
     parseInt(localStorage.getItem('xp_ext_split') || '50', 10)
   );
@@ -294,10 +302,14 @@ export default function AppDashboard() {
     localStorage.setItem('xp_week_split', String(endWeekSplitPct));
   }, [endWeekSplitPct]);
 
+
   const [weekAllocModal, setWeekAllocModal] = useState(null);
   const [weekAllocInput, setWeekAllocInput] = useState('');
+
+
   const [notifs, setNotifs] = useState([]);
   const notifIdRef = useRef(0);
+
   const month = getCurrentMonth();
 
   const notify = useCallback((message, type = 'info') => {
@@ -308,6 +320,7 @@ export default function AppDashboard() {
       setTimeout(() => setNotifs(prev => prev.filter(n => n.id !== id)), 450);
     }, 4500);
   }, []);
+
 
   const loadData = useCallback(async () => {
     try {
@@ -340,13 +353,14 @@ export default function AppDashboard() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+
+
   useEffect(() => {
     if (!settings.budget_locked) return;
 
     const { key, label, num } = getCurrentWeekInfo();
     const currentWeekData = weeks[key];
     const day = new Date().getDate();
-
 
     if (currentWeekData && currentWeekData.allocated === 0 && !currentWeekData.ended) {
       const promptKey = `xp_prompted_${month}_${key}`;
@@ -355,6 +369,7 @@ export default function AppDashboard() {
         setWeekAllocModal({ weekKey: key, label, isPrompt: true });
       }
     }
+
     const weekEnds = [7, 14, 21, 31];
     const currentEnd = weekEnds[num - 1];
     if (day === currentEnd) {
@@ -374,8 +389,8 @@ export default function AppDashboard() {
         }
       }
     }
-
   }, [settings.budget_locked, weeks, month]);
+
 
   useEffect(() => {
     const total = parseFloat(monthlyAllowance) || 0;
@@ -415,6 +430,7 @@ export default function AppDashboard() {
     }
   };
 
+
   const handleSaveWeekAllocation = async () => {
     const amount = parseFloat(weekAllocInput);
     if (!amount || amount <= 0) return notify('Enter a valid amount', 'error');
@@ -435,9 +451,20 @@ export default function AppDashboard() {
     }
   };
 
+
   const handleAddExpense = async (e) => {
     e.preventDefault();
     if (!expCat || !expDesc || !expAmt || !expDate) return notify('Fill all fields', 'error');
+
+    const weekNums = { fixed_week1: 1, week2: 2, week3: 3, week4: 4 };
+    if (weekNums[expCat] !== undefined) {
+      if (weekNums[expCat] > getCurrentWeekInfo().num) {
+        return notify(`That week hasn't started yet — you can only log expenses for the current or past weeks`, 'error');
+      }
+      if (weeks[expCat]?.ended) {
+        return notify(`${CAT_NAMES[expCat]} is already closed — no more expenses can be added`, 'error');
+      }
+    }
     try {
       await API.post('/expenses', {
         month_year: month, category: expCat,
@@ -451,6 +478,7 @@ export default function AppDashboard() {
       notify(e.response?.data?.error || 'Failed to add expense', 'error');
     }
   };
+
 
   const handleDeleteExpense = async () => {
     if (!deleteModal) return;
@@ -469,6 +497,7 @@ export default function AppDashboard() {
     setWeekAllocInput(currentAlloc > 0 ? String(currentAlloc) : '');
     setWeekAllocModal({ weekKey, label, isPrompt: false });
   };
+
 
   const handleEndWeek = (weekKey) => {
     if (weeks[weekKey]?.ended) return notify('Week already ended', 'warning');
@@ -492,6 +521,7 @@ export default function AppDashboard() {
     }
   };
 
+
   const handleAddExtIncome = async () => {
     const amount = parseFloat(extAmt);
     if (!amount || amount <= 0) return notify('Enter a valid amount', 'error');
@@ -506,6 +536,8 @@ export default function AppDashboard() {
       notify(e.response?.data?.error || 'Failed', 'error');
     }
   };
+
+
   const handleResetMonth = async () => {
     try {
       await API.post('/budget/reset-month', { month_year: month, new_month_year: month });
@@ -532,9 +564,12 @@ export default function AppDashboard() {
     }
   };
 
+
   const totalNeedsAllocated = Object.values(weeks).reduce((s, w) => s + w.allocated, 0);
   const totalNeedsSpent = Object.values(weeks).reduce((s, w) => s + w.spent, 0);
   const totalExternal = externalHistory.reduce((s, e) => s + e.amount, 0);
+
+
   const barData = {
     labels: ['Fixed + Wk1', 'Week 2', 'Week 3', 'Week 4'],
     datasets: [
@@ -573,6 +608,7 @@ export default function AppDashboard() {
     plugins: { legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Space Mono', size: 11 }, padding: 16 } } }
   };
 
+
   const navTabs = [
     { key: 'input',  label: 'INPUT',  icon: <LayoutDashboard size={20} /> },
     { key: 'needs',  label: 'NEEDS',  icon: <ListChecks      size={20} /> },
@@ -582,6 +618,7 @@ export default function AppDashboard() {
   return (
     <>
       <Notifications notifs={notifs} />
+
       <nav className="xp-nav">
         <div className="xp-nav-brand">
           <XpensifyLogo size={24} showWordmark={true} />
@@ -621,6 +658,7 @@ export default function AppDashboard() {
           <span>LOGOUT</span>
         </button>
       </div>
+
       <div className="xp-action-bar">
         <span className="xp-week-badge">
           <Calendar size={13} style={{marginRight:'.4rem'}} />
@@ -636,6 +674,7 @@ export default function AppDashboard() {
       </div>
 
       <main className="xp-main">
+
         {activeTab === 'input' && (
           <div>
             <div className="xp-section-header">
@@ -660,6 +699,7 @@ export default function AppDashboard() {
                         disabled={settings.budget_locked} placeholder="0" />
                     </div>
                   </div>
+
                   <div className="xp-split-control">
                     <div className="xp-split-title">SURPLUS / DEFICIT SPLIT</div>
                     <div className="xp-split-display">
@@ -713,6 +753,7 @@ export default function AppDashboard() {
                   </button>
                 </div>
               </div>
+
               <div className="xp-card">
                 <div className="xp-card-header">
                   <span className="xp-card-title"><CreditCard size={14} style={{marginRight:'.5rem'}}/>ADD EXPENSE</span>
@@ -724,10 +765,24 @@ export default function AppDashboard() {
                       <select className="xp-select" value={expCat} onChange={e => setExpCat(e.target.value)} required>
                         <option value="">SELECT CATEGORY</option>
                         <optgroup label="Needs">
-                          <option value="fixed_week1">Fixed + Week 1</option>
-                          <option value="week2">Week 2</option>
-                          <option value="week3">Week 3</option>
-                          <option value="week4">Week 4</option>
+                          {[
+                            { value: 'fixed_week1', label: 'Fixed + Week 1', num: 1 },
+                            { value: 'week2',       label: 'Week 2',         num: 2 },
+                            { value: 'week3',       label: 'Week 3',         num: 3 },
+                            { value: 'week4',       label: 'Week 4',         num: 4 },
+                          ].map(w => {
+                            const isFuture = w.num > getCurrentWeekInfo().num;
+                            const isEnded  = weeks[w.value]?.ended;
+                            return (
+                              <option
+                                key={w.value}
+                                value={w.value}
+                                disabled={isFuture || isEnded}
+                              >
+                                {w.label}{isFuture ? ' (not started)' : isEnded ? ' (ended)' : ''}
+                              </option>
+                            );
+                          })}
                         </optgroup>
                         <optgroup label="Income">
                           <option value="personal">Personal Spending</option>
@@ -760,6 +815,7 @@ export default function AppDashboard() {
                 </div>
               </div>
             </div>
+
             <div className="xp-card xp-col-span-2" style={{ marginBottom: '1.5rem' }}>
               <div className="xp-card-header"><span className="xp-card-title"><BarChart2 size={14} style={{marginRight:'.5rem'}}/>BUDGET SUMMARY</span></div>
               <div className="xp-card-body">
@@ -778,7 +834,7 @@ export default function AppDashboard() {
                       <span className="xp-summary-val text-red">Ksh {fmt(totalNeedsSpent)}</span>
                     </div>
                     <div className="xp-summary-row">
-                      <span className="xp-summary-key" style={{ fontWeight: 600 }}>Remaining amount</span>
+                      <span className="xp-summary-key" style={{ fontWeight: 600 }}>Needs Remaining</span>
                       <span className={`xp-summary-val ${totalNeedsAllocated - totalNeedsSpent < 0 ? 'text-red' : 'text-green'}`}>
                         Ksh {fmt(totalNeedsAllocated - totalNeedsSpent)}
                       </span>
@@ -803,6 +859,7 @@ export default function AppDashboard() {
                     </div>
                   </div>
                 </div>
+
                 {settings.budget_locked && (() => {
                   const weekDefs = [
                     { key: 'fixed_week1', label: 'Fixed + Week 1' },
@@ -830,6 +887,7 @@ export default function AppDashboard() {
                 })()}
               </div>
             </div>
+
             <div className="xp-card">
               <div className="xp-card-header"><span className="xp-card-title"><Clock size={14} style={{marginRight:'.5rem'}}/>RECENT EXPENSES</span></div>
               <div className="xp-card-body">
@@ -916,6 +974,7 @@ export default function AppDashboard() {
                   </div>
                 </div>
               </div>
+
               <div className="xp-card">
                 <div className="xp-card-header"><span className="xp-card-title"><ArrowRightLeft size={14} style={{marginRight:'.5rem'}}/>INCOME SUMMARY</span></div>
                 <div className="xp-card-body">
@@ -1056,12 +1115,11 @@ export default function AppDashboard() {
 
       </main>
 
-
       <footer className="xp-footer">
         <p className="xp-footer-text">Developed by <strong style={{ color: 'var(--accent)' }}>Emmanuel Waseth</strong></p>
         <div className="xp-footer-links">
           <a href="https://github.com/Waseth" target="_blank" rel="noreferrer" className="xp-footer-link">GitHub</a>
-          <a href="https://instagram.com/_sapospov_" target="_blank" rel="noreferrer" className="xp-footer-link">Instagram</a>
+          <a href="https://instagram.com/waseth.dev" target="_blank" rel="noreferrer" className="xp-footer-link">Instagram</a>
           <a href="mailto:wasethsapriso@gmail.com" className="xp-footer-link">Email</a>
         </div>
       </footer>
@@ -1111,7 +1169,7 @@ export default function AppDashboard() {
             title={`END ${CAT_NAMES[endWeekModal.weekKey]?.toUpperCase()}`}
             actions={<>
               <button className="btn btn-ghost" onClick={() => setEndWeekModal(null)}><X size={13} style={{marginRight:'.3rem'}}/>CANCEL</button>
-              <button className="btn btn-accent" onClick={confirmEndWeek}><CheckCircle2 size={13} style={{marginRight:'.3rem'}}/>CONFIRM</button>
+              <button className="btn btn-accent" onClick={confirmEndWeek}><CheckCircle2 size={13} style={{marginRight:'.3rem'}}/>CONFIRM & CLOSE WEEK</button>
             </>}>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem', marginBottom: '1rem' }}>
@@ -1154,7 +1212,7 @@ export default function AppDashboard() {
             )}
             {surplus === 0 && (
               <div className="xp-info-box" style={{ marginTop: '1rem' }}>
-                ✓ Perfect spend
+                ✓ Perfect spend — no adjustments needed
               </div>
             )}
 
@@ -1193,13 +1251,12 @@ export default function AppDashboard() {
         title="CLEAR ALL DATA" sub="This will permanently delete all expenses, budgets, and balances for this month."
         actions={<>
           <button className="btn btn-ghost" onClick={() => setConfirmClearOpen(false)}><X size={13} style={{marginRight:'.3rem'}}/>CANCEL</button>
-          <button className="btn btn-danger" onClick={handleClearAll}><Trash2 size={13} style={{marginRight:'.3rem'}}/>CLEAR ALL</button>
+          <button className="btn btn-danger" onClick={handleClearAll}><Trash2 size={13} style={{marginRight:'.3rem'}}/>CLEAR EVERYTHING</button>
         </>}>
         <div className="xp-warning-box">
           <AlertTriangle size={13} style={{marginRight:'.5rem',flexShrink:0}}/> All data will be permanently lost. This action cannot be undone.
         </div>
       </Modal>
-
 
       <Modal open={confirmResetOpen} onClose={() => setConfirmResetOpen(false)}
         title="RESET MONTH" sub="Clears all expenses and budgets. Savings and Personal balances are carried over."
@@ -1224,7 +1281,7 @@ export default function AppDashboard() {
         }
         actions={<>
           <button className="btn btn-ghost" onClick={() => { setWeekAllocModal(null); setWeekAllocInput(''); }}>
-            {weekAllocModal?.isPrompt ? <><X size={13} style={{marginRight:'.3rem'}}/>SKIP</> : <><X size={13} style={{marginRight:'.3rem'}}/>CANCEL</>}
+            {weekAllocModal?.isPrompt ? <><X size={13} style={{marginRight:'.3rem'}}/>SKIP FOR NOW</> : <><X size={13} style={{marginRight:'.3rem'}}/>CANCEL</>}
           </button>
           <button className="btn btn-accent" onClick={handleSaveWeekAllocation}>
             {weeks[weekAllocModal?.weekKey]?.allocated > 0
@@ -1263,7 +1320,6 @@ export default function AppDashboard() {
                 />
               </div>
             </div>
-
 
             {weekAllocInput && parseFloat(weekAllocInput) > 0 && (
               <div className="xp-week-alloc-preview">
