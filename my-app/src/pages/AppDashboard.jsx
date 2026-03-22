@@ -1169,7 +1169,7 @@ export default function AppDashboard() {
             title={`END ${CAT_NAMES[endWeekModal.weekKey]?.toUpperCase()}`}
             actions={<>
               <button className="btn btn-ghost" onClick={() => setEndWeekModal(null)}><X size={13} style={{marginRight:'.3rem'}}/>CANCEL</button>
-              <button className="btn btn-accent" onClick={confirmEndWeek}><CheckCircle2 size={13} style={{marginRight:'.3rem'}}/>CONFIRM & CLOSE WEEK</button>
+              <button className="btn btn-accent" onClick={confirmEndWeek}><CheckCircle2 size={13} style={{marginRight:'.3rem'}}/>CONFIRM</button>
             </>}>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '.5rem', marginBottom: '1rem' }}>
